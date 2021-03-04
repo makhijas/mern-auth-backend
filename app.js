@@ -4,8 +4,7 @@ const express = require('express');
 const routes = require('./routes');
 const cors = require('cors')
 const bodyParser = require("body-parser")
-
-
+require('./config/passport')(passport)
 
 
 // App Set up
@@ -14,10 +13,11 @@ const PORT = process.env.PORT || 8000;
 
 
 // Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
-//app.use(express.urlencoded({ extended: false }));
+//app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); // JSON parsing
 app.use(cors()); // allow all CORS requests
+app.use(passport.initialize())
 
 // API Routes
 app.get('/api/', (req, res) => {

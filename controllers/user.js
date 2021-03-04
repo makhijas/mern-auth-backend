@@ -64,7 +64,10 @@ const login = async (req,res) => {
         const foundUser = await db.User.findOne({ email: req.body.email })
         if (foundUser) {
             // user is in the DB
-            let isMatch = await bcrypt.compare(password, foundUser.password);
+            let isMatch = await bcrypt.compare(req.body.password, foundUser.password);
+            //bcrypt.compare will unhash the saved password: foundUser.password 
+            //and it will be compared to the user input in req.body.password
+
             console.log(isMatch);
             if (isMatch) {
                 // if user match, then we want to send a JSON Web Token
@@ -114,12 +117,27 @@ const login = async (req,res) => {
         // }
 }
 
+//private 
+//req.body will be passed into profile automatically 
+//this give us access to the id, name and email of the logged in user
+const private = (req, res) => { 
+    console.log('===> inside /profile')
+    console.log(req.body)
+    console.log("====> user:")
+    console.log(req.user)
+    const {id, name, email } = req.user //req object with user object inside
+    res.json({ id, name, email }) //this short hand and is the same as res.json({ id:id, name:name, email:name })
+
+
+}
+
 
 //Exports
 module.exports = {
     test,
     register, 
-    login
+    login, 
+    profile
 }
 
 
