@@ -8,3 +8,14 @@ const { JWT_SECRET } = process.env;
 
 const db = require ('../models');
 
+const test = (req,res) => { 
+    res.json({ message: 'User endpoint OK!✅'})
+}
+
+
+//Exports
+module.exports = {
+    test,
+}
+
+
