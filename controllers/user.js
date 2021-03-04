@@ -55,6 +55,35 @@ const register = (req, res)=> {
     .catch(err => console.log("Error finding user", err))
 }
 
+const login = async (req,res) => {
+        //POST route - finding user and returning user
+        console.log('====> Inside of /login') //console.log for every route to know that you are hitting it
+        console.log('====> /login -> req.body')
+        console.log(req.body) //req.body has all the user info - name, email, password
+
+        const foundUser = await db.User.findOne({ email: req.body.email })
+
+        if (foundUser) {
+            //user is in the DB
+            let isMatch = await bcrypt.compare(password, foundUser.password)
+            console.log(isMatch)
+            //If user match, then we want to send JSON web token(jwt)
+            //Create a token payload
+            //add an expiredToken = Date.now()
+            //save the user
+            const payload = {
+                id: foundUser.id,
+                email: foundUser.email, 
+                name: foundUser.name
+            }
+
+            jwt.sign(payload, JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
+                if (err) { 
+                    res.status(400).json({ message: "Session has ended. Please log in again"})
+                }
+            })
+        }
+}
 
 
 //Exports
