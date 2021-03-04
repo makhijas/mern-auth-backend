@@ -62,34 +62,64 @@ const login = async (req,res) => {
         console.log(req.body) //req.body has all the user info - name, email, password
 
         const foundUser = await db.User.findOne({ email: req.body.email })
-
         if (foundUser) {
-            //user is in the DB
-            let isMatch = await bcrypt.compare(password, foundUser.password)
-            console.log(isMatch)
-            //If user match, then we want to send JSON web token(jwt)
-            //Create a token payload
-            //add an expiredToken = Date.now()
-            //save the user
-            const payload = {
-                id: foundUser.id,
-                email: foundUser.email, 
-                name: foundUser.name
-            }
-
-            jwt.sign(payload, JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
-                if (err) { 
-                    res.status(400).json({ message: "Session has ended. Please log in again"})
+            // user is in the DB
+            let isMatch = await bcrypt.compare(password, foundUser.password);
+            console.log(isMatch);
+            if (isMatch) {
+                // if user match, then we want to send a JSON Web Token
+                // Create a token payload
+                // add an expiredToken = Date.now()
+                // save the user
+                const payload = {
+                    id: foundUser.id,
+                    email: foundUser.email,
+                    name: foundUser.name
                 }
-            })
+                jwt.sign(payload, JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
+                    if (err) {
+                        res.status(400).json({ message: 'Session has ended, please log in again'});
+                    }
+                    const legit = jwt.verify(token, JWT_SECRET, { expiresIn: 60 })
+                    console.log("===> LEGIT!")
+                    console.log(legit)
+                    res.json({ success: true, token: `Bearer ${token}`, userData: legit })
+                });
+            } else {
+                return res.status(400).json({ message: "Email or Password is incorrect" })
+            }
+        } else { 
+            return res.status(400).json({ message: "User not found" })
         }
+
+        // if (foundUser) {
+        //     //user is in the DB
+        //     let isMatch = await bcrypt.compare(password, foundUser.password)
+        //     console.log(isMatch)
+        //     //If user match, then we want to send JSON web token(jwt)
+        //     //Create a token payload
+        //     //add an expiredToken = Date.now()
+        //     //save the user
+        //     const payload = {
+        //         id: foundUser.id,
+        //         email: foundUser.email, 
+        //         name: foundUser.name
+        //     }
+
+        //     jwt.sign(payload, JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
+        //         if (err) { 
+        //             res.status(400).json({ message: "Session has ended. Please log in again"})
+        //         }
+        //     })
+        // }
 }
 
 
 //Exports
 module.exports = {
     test,
-    register
+    register, 
+    login
 }
 
 
