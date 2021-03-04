@@ -15,6 +15,5 @@ mongoose.connect(MONGO_URL, configOptions)
 
 module.exports = {
     Example: require('./example'),
-    //add the user model here: 
     User: require('./user')
 };

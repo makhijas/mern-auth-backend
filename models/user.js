@@ -25,4 +25,4 @@ const userSchema = new Schema({
 const User = mongoose.model('User', userSchema)
 
 //export the model for use in other files (in this case using this in index.js in models folder)
-model.exports = User;
+module.exports = User;
